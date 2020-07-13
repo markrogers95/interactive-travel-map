@@ -4,7 +4,6 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "lint": "eslint src/"
@@ -14,8 +13,10 @@
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "helmet": "^3.23.3",
+    "mongoose": "^5.9.23",
     "morgan": "^1.10.0"
   },
   "devDependencies": {
