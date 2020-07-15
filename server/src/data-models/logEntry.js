@@ -39,4 +39,4 @@ var logEntrySchema = new Schema({
 
 const logEntry = mongoose.model('logEntry', logEntrySchema);
 
-module.exports = logEntrySchema;
+module.exports = logEntry;

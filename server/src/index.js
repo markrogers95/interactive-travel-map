@@ -7,15 +7,15 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const middlewares = require('./middlewares');
+const logs = require('./api/logs');
 
-const logs = require('./api/logEntry')
 
 const app = express();
 
-mongoose.connect('mongodb://127.0.0.1:27017/test', {
+mongoose.connect('mongodb://127.0.0.1:27017/travel-map', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-});
+}).catch(error => handleError(error));
 
 app.use(morgan('common'));
 app.use(helmet());
