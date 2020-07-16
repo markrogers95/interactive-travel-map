@@ -20,7 +20,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/travel-map', {
 app.use(morgan('common'));
 app.use(helmet());
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: 'http://localhost:3000',
 }));
 app.use(express.json());
 
