@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import ReactMapGL, { Marker } from 'react-map-gl';
+import ReactMapGL, { Marker, Popup } from 'react-map-gl';
 
 import { listLogEntries } from './API';
+import LogEntryForm from './LogEntryForm';
 
 const App = () => {
 
   const [logEntries, setLogEntries] = useState([]);
-
+  const [showPopup, setShowPopup] = useState({});
   const [viewport, setViewport] = useState({
     width: '100vw',
     height: '100vh',
@@ -14,6 +15,7 @@ const App = () => {
     longitude: -0.18333,
     zoom: 5
   });
+  const [addEntryLocation, setAddEntryLocation] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -23,35 +25,117 @@ const App = () => {
     })();
   }, []);
 
+  const showAddMarkerPopup = (event) => {
+    const [longitude, latitude] = event.lngLat;
+    setAddEntryLocation({
+      latitude,
+      longitude,
+    })
+  };
+
   return (
     <ReactMapGL
       {...viewport}
       mapStyle="mapbox://styles/markyy975/ckcp7w64d07e11il96g29fqcb"
       mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
       onViewportChange={nextViewport => setViewport(nextViewport)}
+      onDblClick={showAddMarkerPopup}
     >
       {logEntries.map(entry => (
-        <Marker
-          key={entry._id}
-          latitude={entry.latitude} 
-          longitude={entry.longitude}
-          offsetLeft={-20}
-          offsetTop={-10}>
-          <svg 
-            viewBox="0 0 24 24" 
-            width="32" 
-            height="32" 
-            stroke="yellow" 
-            strokeWidth="1.5" 
-            fill="none" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            className="css-i6dzq1">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-          </svg> 
-        </Marker>
+        <>
+          <Marker
+            key={entry._id}
+            latitude={entry.latitude} 
+            longitude={entry.longitude}
+            >
+              <div
+                onClick={() => setShowPopup({
+                  //...showPopup,
+                  [entry._id]: true,
+                  })}>               
+                    <svg 
+                      className="marker"
+                      viewBox="0 0 24 24"
+                      style = {{
+                        width: `${8 * viewport.zoom}px`,
+                        height: `${8 * viewport.zoom}px`,
+                        maxHeight: `48px`,
+                        maxWidth: `48px`
+                      }}
+                      stroke="yellow" 
+                      strokeWidth="1.5" 
+                      fill="none" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg> 
+              </div>
+          </Marker>
+          {
+            showPopup[entry._id] ? (
+              <Popup
+                latitude={entry.latitude} 
+                longitude={entry.longitude}
+                closeButton={true}
+                closeOnClick={true}
+                dynamicPosition={true}
+                onClose={() => setShowPopup({})}
+                anchor="top" >
+                <div className="popup">
+                  <h3>{entry.title}</h3>
+                  <p>{entry.comments}</p>
+                  <small>
+                    Visited on: <i>{new Date(entry.visitDate).toLocaleDateString()}</i>
+                  </small>
+                </div>
+              </Popup>
+              ) : null
+            }
+          </>
       ))}
+      {
+        addEntryLocation ? (
+          <>
+          <Marker
+            latitude={addEntryLocation.latitude} 
+            longitude={addEntryLocation.longitude}
+            >
+              <div>
+                <svg
+                  className="marker"
+                  viewBox="0 0 24 24"
+                  style = {{
+                    width: `${8 * viewport.zoom}px`,
+                    height: `${8 * viewport.zoom}px`,
+                    maxHeight: `48px`,
+                    maxWidth: `48px`
+                  }}
+                  stroke="red" 
+                  strokeWidth="1.5" 
+                  fill="none" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg> 
+              </div>
+          </Marker>
+          <Popup
+            latitude={addEntryLocation.latitude} 
+            longitude={addEntryLocation.longitude}
+            closeButton={true}
+            closeOnClick={false}
+            dynamicPosition={true}
+            onClose={() => setAddEntryLocation(null)}
+            anchor="top" >
+            <div className="popup">
+              <LogEntryForm />
+            </div>
+          </Popup>
+          </>
+        ) : null
+      }
     </ReactMapGL>
   );
 }

@@ -8,3 +8,22 @@ body {
   height: 100vh;
   overflow: hidden;
 }
+
+.marker{
+  transform: translate(-50%, -100%);
+}
+
+.popup{
+  width: 40vw;
+  padding: 1rem;
+}
+
+.entry-form label,
+.entry-form input, 
+.entry-form textarea, 
+.entry-form button{
+  font-size: 1.8rem;
+  margin: 0.5rem 0;
+  display: block;
+  width: 100%;
+}
